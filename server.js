@@ -7,14 +7,21 @@ const io = new Server(server);
 
 app.use(express.static("./"))
 let posicoes = {}
-
+let iniciado = false
 io.on('connection', (socket) =>{
-	socket.on('move', (pos) =>{
-
+	
+	socket.on('move', (jogadores) =>{
+		socket.broadcast.emit('refresh positions',jogadores)
 	})
-	setInterval(() =>{
-		socket.broadcast.emit('refresh',posicoes)
-	},20)
+
+	
+	setTimeout(() =>{
+		socket.broadcast.emit('start')
+	},20000)
+	
+	// setInterval(() =>{
+	// 	socket.broadcast.emit('refresh',posicoes)
+	// },20)
 })
 
 

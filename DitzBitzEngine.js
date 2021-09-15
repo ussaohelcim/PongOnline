@@ -1046,7 +1046,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
     }
     
-    function AdicionarMomentun(objeto,x = 0,y = 0)
+    function SetMomentum(objeto,x = 0,y = 0)
     {
         objeto.xmom = x;
         objeto.ymom = y;
@@ -1095,42 +1095,112 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // object instantiation and creation happens here 
 
     //import { io } from "socket.io";
-    let socket = io()
 
+    let socket = io()
     
     let raqueteEsquerda = new Rectangle(10,0,20,50,"#FF0000")
     let raqueteDireita = new Rectangle(610,0,20,50,"#FF0000")
-    let bola = new Circle(100,100,10,"#00FF00")
+    
+    let velocidadeBola = 3;
+    
+    let paredeEsquerda = new Rectangle(0,0,10, 640 ,"#FFFFFF")
+    let paredeDireita = new Rectangle(630,0,10, 640 ,"#FFFFFF")
+    
+    let paredeCima = new Rectangle(0,0,640,10,"#FFFFFF")
+    let paredeBaixo = new Rectangle(0,470,640,10 ,"#FFFFFF")
 
+    let bola = new Circle(300,300,10,"#00FF00")
     
 
     function main() {
         canvas_context.clearRect(0, 0, canvas.width, canvas.height)  // refreshes the image
 
         // game code goes here
+        // if(bola.x >= 640)
+        // {
+        //     socket.emit('p1 scores')
+        // }
+        // else if(bola.x <= 0)
+        // {
+        //     socket.emit('p2 scores')
 
-        // socket.emit('move')
-        // socket.on('refresh')
+        // }
+        
+        socket.on('refresh positions', (posicoes) =>{
+            raqueteDireita.y = posicoes.raqueteDireita.y
+            raqueteEsquerda.y = posicoes.raqueteEsquerda.y
+            bola.x = posicoes.bola.x;
+            bola.y = posicoes.bola.y;
+            
+        })
+        socket.on('start',()=>{
+            SetMomentum(bola,velocidadeBola,0)
+        })
+
+
+
+        paredeEsquerda.draw()
+        paredeDireita.draw()
+        paredeBaixo.draw()
+        paredeCima.draw()
 
         controlWasd(raqueteEsquerda,3)
         controlJkli(raqueteDireita,3)
-
         raqueteEsquerda.draw()
 
         raqueteDireita.draw()
         
+        bola.move()
+        
+        socket.emit('move', {raqueteDireita, raqueteEsquerda, bola} )
+
         if(raqueteEsquerda.doesPerimeterTouch(bola))
         {
-            AdicionarMomentun(bola,raqueteEsquerda.x<bola.x ? 1:-1, raqueteEsquerda.y<bola.y ? 1:-1)
-            let suco = setInterval(()=>{
-                bola.color = getRandomColor()
-            },1000)
+
+            raqueteEsquerda.color = getRandomLightColor()
+            setTimeout( () =>{
+                raqueteEsquerda.color = "#FF0000"
+                
+
+            },200)
+
+            SetMomentum(bola,velocidadeBola, bola.y > raqueteEsquerda.y+raqueteEsquerda.height/2 ? velocidadeBola:-velocidadeBola)            
         }
+        else if(raqueteDireita.doesPerimeterTouch(bola))
+        {
+
+            raqueteDireita.color = getRandomLightColor()
+            setTimeout( () =>{
+                raqueteDireita.color = "#FF0000"
+
+
+            },200)
+
+            SetMomentum(bola,-velocidadeBola, bola.y > raqueteDireita.y+raqueteDireita.height/2 ? velocidadeBola:-velocidadeBola)    
+        }
+        else if(paredeBaixo.doesPerimeterTouch(bola))
+        {
+
+            SetMomentum(bola,bola.xmom,bola.x > paredeBaixo.x + paredeBaixo.width/2 ? velocidadeBola : -velocidadeBola )
+        }
+        else if(paredeCima.doesPerimeterTouch(bola))
+        {
+
+            SetMomentum(bola,bola.xmom,bola.x > paredeCima.x + paredeCima.width/2 ? velocidadeBola : -velocidadeBola )
+        }
+        else if(paredeEsquerda.doesPerimeterTouch(bola))
+        {
+
+
+            SetMomentum(bola,-bola.xmom,bola.y > paredeCima.y + paredeCima.height/2 ? velocidadeBola : -velocidadeBola )
+        }
+        else if(paredeDireita.doesPerimeterTouch(bola))
+        {
+            SetMomentum(bola,-bola.xmom,bola.y > paredeCima.y + paredeCima.height/2 ? -velocidadeBola : velocidadeBola )
+            
+        }
+
         bola.draw()
-
-        bola.move()
-
-        //raqueteDireita.color = getRandomColor()
         
     }
 })
