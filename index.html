@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pong Online</title>
+	<style>
+		body,html{
+			margin: 0;
+			padding: 0;
+			background-color: blanchedalmond;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100%;
+			height: 100%;
+			flex-direction: column;
+		}
+		canvas
+		{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		#score
+		{
+			display: flex;
+		}
+	</style>
+	<script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div id="score">
+		<div class="" id="p1">0</div>
+		<div class="" id="p2">0</div>
+	</div>
+	<canvas width="640" height="480" id="canvas"></canvas>
+	<footer>Made by ussaohelcim. <a href="https://github.com/ussaohelcim/PongOnline">GitHub Repository</a></footer>
+	<script src="./DitzBitzEngine.js"></script>
+</body>
+</html>
